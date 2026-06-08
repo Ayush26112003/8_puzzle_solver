@@ -7,7 +7,7 @@ An interactive full-stack web application designed to demonstrate, analyze, and 
 ## Institutional Profile & Team
 
 **Institution:** Techno Main SaltLake  
-**Department:** Computer Science & Engineering (CSE)
+**Department:** Computer Science & Engineering(Data Science)
 
 ### Team Members
 
