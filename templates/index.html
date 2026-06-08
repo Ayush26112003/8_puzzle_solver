@@ -35,9 +35,10 @@
         <div class="controls">
             <button class="shuffle" onclick="shuffleBoard()" id="shuffleBtn">Shuffle Board</button>
             <select id="algorithm">
-                <option value="A*-manhattan">A* (Manhattan Distance)</option>
-                <option value="A*-misplaced">A* (Misplaced Tiles)</option>
                 <option value="BFS-none">Breadth-First Search</option>
+                <option value="DFS-none">Depth-First Search (DFS)</option>
+                <option value="A*-misplaced">A* (Misplaced Tiles)</option>
+                <option value="A*-manhattan">A* (Manhattan Distance)</option>
             </select>
             <button onclick="solve()" id="solveBtn">Calculate & Solve</button>
             <button onclick="runComparison()" id="compareBtn" style="background: #8B5CF6;">Run Full Comparison</button>

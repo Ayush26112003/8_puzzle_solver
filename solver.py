@@ -354,7 +354,7 @@ if __name__ == "__main__":
     # Included DFS to show that the memory limits will now gracefully catch its massive output
     strategies = [
         ('BFS', None),
-        # ('DFS', None), 
+        ('DFS', None), 
         ('A*', 'misplaced'),
         ('A*', 'manhattan')
     ]

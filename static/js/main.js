@@ -281,7 +281,7 @@ function showModal() {
             datasets: [{
                 label: 'Nodes Expanded (Lower is Better)',
                 data: nodesData,
-                backgroundColor: ['#3B82F6', '#10B981', '#F59E0B'],
+                backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'],
                 borderWidth: 1
             }]
         },

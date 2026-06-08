@@ -44,39 +44,63 @@ def compare_algorithms():
     initial_state = tuple(data.get('state', []))
 
     if len(initial_state) != 9 or set(initial_state) != set(range(9)):
-        return jsonify({'error': 'Invalid board state provided.'}), 400
+        return jsonify({'success': False, 'error': 'Invalid board state provided.'}), 400
 
-    solver = PuzzleSolver(initial_state)
-    strategies = [
-        ('A*', 'manhattan'),
-        ('A*', 'misplaced'),
-        ('BFS', None)
-    ]
-    
-    results = []
-    for alg, heur in strategies:
-        # Failsafe for BFS on hard boards to prevent server timeouts
-        if alg == 'BFS' and solver.heuristic_manhattan(initial_state) > 16:
-            results.append({
-                'algorithm': 'BFS',
-                'nodes_expanded': 'Skipped (Too Deep)',
-                'time_taken': 'N/A',
-                'steps': 'N/A'
-            })
-            continue
-            
-        res = solver.solve(algorithm=alg, heuristic=heur)
-        display_name = f"{alg} ({heur})" if heur else alg
+    try:
+        solver = PuzzleSolver(initial_state)
+        # UPDATED: Added DFS to the processing strategies matrix
+        strategies = [
+            ('A*', 'manhattan'),
+            ('A*', 'misplaced'),
+            ('BFS', None),
+            ('DFS', None)
+        ]
         
-        if res:
-            results.append({
-                'algorithm': display_name,
-                'nodes_expanded': res['nodes_expanded'],
-                'time_taken': round(res['time_taken'], 4),
-                'steps': res['steps']
-            })
+        results = []
+        for alg, heur in strategies:
+            # Failsafe protection for BFS depth limits
+            if alg == 'BFS' and solver.heuristic_manhattan(initial_state) > 16:
+                results.append({
+                    'algorithm': 'BFS',
+                    'nodes_expanded': 'Skipped (Too Deep)',
+                    'time_taken': 'N/A',
+                    'steps': 'N/A'
+                })
+                continue
+            
+            # Failsafe protection for DFS to prevent extreme server/browser stalls
+            if alg == 'DFS' and solver.heuristic_manhattan(initial_state) > 12:
+                results.append({
+                    'algorithm': 'DFS',
+                    'nodes_expanded': 'Skipped (High Risk of Infinite Depth)',
+                    'time_taken': 'N/A',
+                    'steps': 'N/A'
+                })
+                continue
+                
+            res = solver.solve(algorithm=alg, heuristic=heur)
+            display_name = f"{alg} ({heur})" if heur else alg
+            
+            if res:
+                results.append({
+                    'algorithm': display_name,
+                    'nodes_expanded': res['nodes_expanded'],
+                    'time_taken': round(res['time_taken'], 4),
+                    'steps': res['steps']
+                })
+            else:
+                results.append({
+                    'algorithm': display_name,
+                    'nodes_expanded': 'Failed',
+                    'time_taken': 'N/A',
+                    'steps': 'Unsolvable'
+                })
 
-    return jsonify({'success': True, 'results': results})
+        return jsonify({'success': True, 'results': results})
+
+    except Exception as e:
+        print(f"[SERVER ERROR] Exception occurred in comparison: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 if __name__ == '__main__':
