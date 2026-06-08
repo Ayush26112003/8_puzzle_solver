@@ -1,0 +1,386 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+.header { text-align: center; margin-bottom: 2rem; }
+.header h1 { margin: 0 0 10px 0; color: #3B82F6; }
+
+/* The Puzzle Board */
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 10px;
+    background-color: #1e1e1e;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+}
+
+.tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3B82F6;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out;
+    user-select: none;
+}
+
+.tile.empty {
+    background-color: transparent;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Drag and Drop Styles */
+.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.drag-over {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    border: 2px dashed #3B82F6;
+}
+
+/* Controls */
+.controls {
+    margin-top: 2rem;
+    display: flex;
+    gap: 15px;
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+select, button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+select { background: #2d2d2d; color: white; border: 1px solid #444; }
+button { background: #10B981; color: white; transition: background 0.2s; }
+button:hover { background: #059669; }
+button:disabled { background: #555; cursor: not-allowed; }
+button.shuffle { background: #F59E0B; }
+button.shuffle:hover { background: #D97706; }
+
+/* Playback Controls */
+#playback-controls {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1.5rem;
+    background: #1e1e1e;
+    padding: 15px 30px;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.playback-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.playback-buttons button {
+    background: #3B82F6;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+
+.playback-buttons button:hover { background: #2563EB; }
+
+#step-counter {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #E0E0E0;
+}
+
+/* Metrics Dashboard */
+.metrics {
+    margin-top: 2rem;
+    display: flex;
+    gap: 30px;
+    text-align: center;
+}
+
+.metric-box {
+    background: #1e1e1e;
+    padding: 15px 30px;
+    border-radius: 8px;
+    border-top: 4px solid #3B82F6;
+}
+
+.metric-value { font-size: 1.5rem; font-weight: bold; margin-top: 5px; }
+.status-text { margin-top: 15px; font-style: italic; color: #aaa; }
+
+/* Make the Nodes Expanded box clickable */
+#box-nodes {
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#box-nodes:hover {
+    transform: scale(1.05);
+    background-color: #2d2d2d;
+    border-top: 4px solid #10B981;
+}
+
+/* Explored Nodes Modal Styles */
+.explored-grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #121212;
+    border-radius: 8px;
+}
+
+.mini-board {
+    display: grid;
+    grid-template-columns: repeat(3, 25px);
+    grid-template-rows: repeat(3, 25px);
+    gap: 3px;
+    background-color: #1e1e1e;
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid #333;
+}
+
+.mini-tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3B82F6;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 3px;
+}
+
+.mini-tile.empty {
+    background-color: transparent;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Make the Path Length box look clickable */
+#box-steps {
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#box-steps:hover {
+    transform: scale(1.05);
+    background-color: #2d2d2d;
+    border-top: 4px solid #F59E0B;
+}
+
+/* Horizontal Timeline Track for the Solution Sequence */
+.path-sequence-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    overflow-x: auto; /* Allows horizontal scrolling through steps */
+    padding: 20px 10px;
+    background: #121212;
+    border-radius: 8px;
+    border: 1px solid #222;
+}
+
+.path-arrow {
+    font-size: 24px;
+    color: #3B82F6;
+    font-weight: bold;
+    user-select: none;
+}
+
+/* ========================================================= */
+/* Layout & Global Adjustments                               */
+/* ========================================================= */
+body {
+    padding: 0 !important; /* Remove old layout padding */
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Wrapper for the interactive solver layout */
+.main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ========================================================= */
+/* Upgraded Navbar Components                                */
+/* ========================================================= */
+.navbar {
+    width: 100%;
+    background-color: #1e1e1e;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 2rem;
+    box-sizing: border-box;
+}
+
+.navbar-brand {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #3B82F6;
+    text-decoration: none;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.nav-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 8px 14px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Spaces the font-awesome icon from text */
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+    background-color: #2d2d2d;
+    color: #3B82F6;
+}
+
+.nav-btn {
+    background-color: #3B82F6;
+    color: white !important;
+}
+
+.nav-btn:hover {
+    background-color: #2563EB;
+}
+
+/* ========================================================= */
+/* Professional Footer Layout System                         */
+/* ========================================================= */
+.footer {
+    width: 100%;
+    background-color: #181818;
+    border-top: 1px solid #2d2d2d;
+    padding: 2rem 3rem;
+    box-sizing: border-box;
+    margin-top: auto;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.footer-left {
+    flex: 1;
+    min-width: 280px;
+}
+
+.footer-college {
+    font-size: 1.1rem;
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.footer-dept {
+    font-size: 0.85rem;
+    color: #888888;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.footer-project {
+    font-size: 0.8rem;
+    color: #555555;
+    margin-top: 20px;
+}
+
+.footer-right {
+    flex: 1.5;
+    min-width: 320px;
+}
+
+.footer-team-title {
+    font-size: 0.85rem;
+    color: #3B82F6;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+}
+
+.team-member {
+    font-size: 0.9rem;
+    color: #dddddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e1e1e;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #262626;
+}
+
+.roll-no {
+    color: #888888;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .footer-right {
+        width: 100%;
+    }
+}
